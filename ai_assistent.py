@@ -71,6 +71,6 @@ async def start_button(update: Update, context: CallbackContext) -> None:
     ]
     reply_markup = ReplyKeyboardMarkup(buttons, resize_keyboard=True)
     await update.message.reply_text(
-        f"👋Добрый день, {user.first_name}! Я официальный бот медицинского центра <b>Green Clinic</b>💚. Выберите действие:",
+        f"hhhhh👋Добрый день, {user.first_name}! Я официальный бот медицинского центра <b>Green Clinic</b>💚. Выберите действие:",
         reply_markup=reply_markup, parse_mode="HTML"
     )
