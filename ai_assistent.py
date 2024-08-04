@@ -57,7 +57,6 @@ async def ai_assistant_respond(update: Update, context) -> None:
     await update.message.reply_text(assistant_message)
 
 
-
 async def under_development(update: Update, context) -> None:
     under_development_message = "Я в разработке...🛠"
     await update.message.reply_text(under_development_message)
@@ -68,9 +67,10 @@ async def start_button(update: Update, context: CallbackContext) -> None:
     user = update.message.from_user
     buttons = [
         [KeyboardButton("Виртуальный ассистент 🤖")],
+        [KeyboardButton("Как пользоваться ботом 📖")],
     ]
     reply_markup = ReplyKeyboardMarkup(buttons, resize_keyboard=True)
     await update.message.reply_text(
-        f"hhhhh👋Добрый день, {user.first_name}! Я официальный бот медицинского центра <b>Green Clinic</b>💚. Выберите действие:",
+        f"👋Добрый день, {user.first_name}! Я ваш виртуальный ассистент! Задавайте ваши интересующие вопросы",
         reply_markup=reply_markup, parse_mode="HTML"
     )
