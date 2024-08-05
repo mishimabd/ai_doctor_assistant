@@ -5,6 +5,7 @@ from ai_assistent import ai_assistant, start_button, ai_assistant_respond
 from instructions import instructions
 
 TELEGRAM_BOT_TOKEN = "7448334585:AAFFk55-y678noEyPqc6o_eDKIwwHeGWArk"
+
 def main():
     print(f"{datetime.now()} - Started")
     application = Application.builder().token(TELEGRAM_BOT_TOKEN).build()
