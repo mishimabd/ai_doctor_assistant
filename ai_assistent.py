@@ -47,6 +47,10 @@ async def ai_assistant(update: Update, context: ContextTypes.DEFAULT_TYPE) -> No
     if "conversation_history" not in context.user_data:
         context.user_data["conversation_history"] = []
 
+    if user_message.lower() == "/clear":
+        await clear_history(update, context)
+        return
+
     # Append user message to conversation history
     context.user_data["conversation_history"].append({
         "role": "user",
@@ -72,6 +76,7 @@ async def ai_assistant_respond(update: Update, context) -> None:
         "Здравствуйте! Я ваш виртуальный ассистент.🏥\n"
         "Я здесь, чтобы помочь вам с вопросами о ваших пациентах.🩺\n"
         "Дайте детальные объяснения состояния пациента, буду рад на них ответить!"
+        "Вы можете прописать /clear, чтобы я забыл прошлые сообщения."
     )
     await update.message.reply_text(assistant_message)
 
@@ -93,3 +98,7 @@ async def start_button(update: Update, context: CallbackContext) -> None:
         f"👋Добрый день, {user.first_name}! Я ваш виртуальный ассистент! Задавайте ваши интересующие вопросы",
         reply_markup=reply_markup, parse_mode="HTML"
     )
+
+async def clear_history(update: Update, context: CallbackContext) -> None:
+    context.user_data["conversation_history"] = []
+    await update.message.reply_text("Запись памяти была очищена! Задавайте ваши вопросы.")
