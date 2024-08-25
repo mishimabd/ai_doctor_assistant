@@ -7,7 +7,7 @@ logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s
                     level=logging.INFO)
 logger = logging.getLogger(__name__)
 
-client = Groq(api_key="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")
+client = Groq(api_key="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")
 
 
 async def call_groq_api(messages: list) -> str:
@@ -70,7 +70,6 @@ async def ai_assistant(update: Update, context: ContextTypes.DEFAULT_TYPE) -> No
     await update.message.reply_text(ai_response)
 
 
-
 async def ai_assistant_respond(update: Update, context) -> None:
     assistant_message = (
         "Здравствуйте! Я ваш виртуальный ассистент.🏥\n"
@@ -98,6 +97,7 @@ async def start_button(update: Update, context: CallbackContext) -> None:
         f"👋Добрый день, {user.first_name}! Я ваш виртуальный ассистент! Задавайте ваши интересующие вопросы",
         reply_markup=reply_markup, parse_mode="HTML"
     )
+
 
 async def clear_history(update: Update, context: CallbackContext) -> None:
     context.user_data["conversation_history"] = []
