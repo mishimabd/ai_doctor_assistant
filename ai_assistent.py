@@ -7,7 +7,7 @@ logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s
                     level=logging.INFO)
 logger = logging.getLogger(__name__)
 
-client = Groq(api_key="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")
+client = Groq(api_key="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")
 
 
 async def call_groq_api(messages: list) -> str:
