@@ -1,3 +1,4 @@
+import re
 from telegram import Update, KeyboardButton, ReplyKeyboardMarkup
 from telegram.ext import ContextTypes, CallbackContext
 from groq import Groq
@@ -6,8 +7,9 @@ import logging
 logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
                     level=logging.INFO)
 logger = logging.getLogger(__name__)
-
 client = Groq(api_key="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")
+# Define a pattern to check for non-Cyrillic characters (excluding some common punctuation and whitespace)
+cyrillic_pattern = re.compile(r'[^\u0400-\u04FF\s.,!?:;\'"()🔴-]')
 
 
 async def call_groq_api(messages: list) -> str:
@@ -16,12 +18,15 @@ async def call_groq_api(messages: list) -> str:
         "role": "system",
         "content": "Ты виртуальный ассистент в медицинской клинике. "
                    "Отвечай только на русском, без символов, без английских слов! "
-                   "Отвечай на вопросы, только связанные с медициной, и с здоровьями пациентов, другие вопросы не "
-                   "принимай, скажи что ты не специализируешь в этом. "
+                   "Отвечай на вопросы, только связанные с медициной, и с здоровьем пациентов, другие вопросы не "
+                   "принимай, скажи что ты не специализируешься в этом. "
                    "Ты помогаешь докторам с вопросами о здоровье их пациентов. "
-                   "Укажите болезнь, разделив её линиями '🔴БОЛЕЗНЬ🔴'.\n"
-                   "После этого укажите, что следует посоветовать пациенту, также разделив советы линиями '🔴СОВЕТЫ🔴'. "
-                   "Перед отправкой своего ответа, обязательно проверь, что бы все твои слова были на русском."
+                   "Укажи болезнь, разделив её линиями '🔴БОЛЕЗНЬ🔴'.\n"
+                   "После этого укажи, что следует посоветовать пациенту, также разделив советы линиями '🔴СОВЕТЫ🔴'. "
+                   "Перед отправкой своего ответа, обязательно проверь, чтобы все твои слова были на русском."
+                   "Задавай встречные вопросы под конец, чтобы получить больше информации от доктора. 1-2 предложения."
+                   "Отвечай очень детально и давай полный ответ по поводу болезни, и что следует ему сделать."
+                   "Отвечай данными которые есть только в книге Пропедевтика внутренних болезней автором которого является Мухин, не отвечай другой информациой."
     }
 
     try:
@@ -35,10 +40,9 @@ async def call_groq_api(messages: list) -> str:
         return chat_completion.choices[0].message.content
     except Exception as e:
         logger.error(f"Error calling Groq API: {e}")
-        return "Sorry, I couldn't process your request."
+        return "Извините, я не смог обработать ваш запрос."
 
 
-# Define the Telegram bot function
 async def ai_assistant(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     user_message = update.message.text
     logger.info(f"Received message: {user_message}")
@@ -57,9 +61,14 @@ async def ai_assistant(update: Update, context: ContextTypes.DEFAULT_TYPE) -> No
         "content": user_message
     })
 
-    # Get the response from the AI
-    ai_response = await call_groq_api(context.user_data["conversation_history"])
-    logger.info(f"AI response: {ai_response}")
+    # Keep generating the response until it contains only Cyrillic characters
+    while True:
+        ai_response = await call_groq_api(context.user_data["conversation_history"])
+        logger.info(f"AI response: {ai_response}")
+
+        if not cyrillic_pattern.search(ai_response):
+            break
+        logger.info("Detected non-Cyrillic characters in the AI response. Regenerating response...")
 
     # Append AI response to conversation history
     context.user_data["conversation_history"].append({
