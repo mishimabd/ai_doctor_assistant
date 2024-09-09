@@ -27,6 +27,7 @@ async def call_groq_api(messages: list) -> str:
                    "Задавай встречные вопросы под конец, чтобы получить больше информации от доктора. 1-2 предложения."
                    "Отвечай очень детально и давай полный ответ по поводу болезни и того, что следует сделать."
                    "Отвечай очень структурно и по-человечески, избегая сложных или неуместных символов."
+                   "Делай большой акцент на том, что ты помогаешь докторам в лечении пациентов. Перенаправь их к докторам по их болезням."
     }
 
     try:
@@ -74,7 +75,6 @@ async def ai_assistant(update: Update, context: ContextTypes.DEFAULT_TYPE) -> No
         "content": ai_response
     })
 
-    # Edit the loading message to display the AI response
     await context.bot.edit_message_text(text=ai_response, chat_id=update.message.chat_id,
                                         message_id=loading_message.message_id)
 
