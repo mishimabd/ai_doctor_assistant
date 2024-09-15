@@ -1,14 +1,28 @@
 import re
+from typing import Any
+
+from asyncpg import PostgresError
 from telegram import Update, KeyboardButton, ReplyKeyboardMarkup
 from telegram.ext import ContextTypes, CallbackContext
 from groq import Groq
 import logging
+import psycopg2
+from psycopg2 import sql
+
+from utils import save_phone_to_db, get_phone_number_from_db, save_user_to_db, is_phone_number_in_whitelist
 
 logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
                     level=logging.INFO)
 logger = logging.getLogger(__name__)
 client = Groq(api_key="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")
 cyrillic_pattern = re.compile(r'[^\u0400-\u04FF\s.,!?:;\'"()🔴-]')
+
+conn = psycopg2.connect(
+            dbname="virtual_assistant_database",
+            user="postgres",
+            password="Lg26y0M@x",
+            host="91.147.92.32",
+        )
 
 
 async def call_groq_api(messages: list) -> str:
@@ -44,6 +58,23 @@ async def call_groq_api(messages: list) -> str:
 
 
 async def ai_assistant(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
+    user_id = update.message.from_user.id
+    phone_number = get_phone_number_from_db(user_id)
+
+    if phone_number is None:
+        # Prompt user to share their phone number
+        await update.message.reply_text(
+            "Пожалуйста, поделитесь вашим номером телефона, чтобы продолжить использование бота.",
+        )
+        return
+
+    if not is_phone_number_in_whitelist(phone_number):
+        # Notify user to contact manager for whitelist
+        await update.message.reply_text(
+            "Пожалуйста, свяжитесь с менеджером, чтобы вас добавили в белый список.",
+        )
+        return
+
     user_message = update.message.text
     logger.info(f"Received message: {user_message}")
 
@@ -88,15 +119,24 @@ async def ai_assistant_respond(update: Update, context) -> None:
     await update.message.reply_text(assistant_message)
 
 
+# Updated start_button function
 async def start_button(update: Update, context: CallbackContext) -> None:
     context.user_data["is_text_for_adding"] = False
     user = update.message.from_user
+
+    # Save user's Telegram ID and username to the database
+    save_user_to_db(user.id, user.username)
+
+    # Define the buttons for the bot's reply
     buttons = [
         [KeyboardButton("Виртуальный ассистент 🤖")],
         [KeyboardButton("Как пользоваться ботом 📖")],
-        [KeyboardButton("Очистить историю 🗑️")],  # New button for clearing history
+        [KeyboardButton("Очистить историю 🗑️")],
+        [KeyboardButton("Поделиться номером телефона 📞", request_contact=True)],
     ]
     reply_markup = ReplyKeyboardMarkup(buttons, resize_keyboard=True)
+
+    # Reply with a greeting message
     await update.message.reply_text(
         f"👋Добрый день, {user.first_name}! Я ваш виртуальный ассистент! Задавайте ваши интересующие вопросы",
         reply_markup=reply_markup, parse_mode="HTML"
@@ -106,3 +146,18 @@ async def start_button(update: Update, context: CallbackContext) -> None:
 async def clear_history(update: Update, context: CallbackContext) -> None:
     context.user_data["conversation_history"] = []
     await update.message.reply_text("Запись памяти была очищена! Задавайте ваши вопросы.")
+
+
+async def contact_handler(update: Update, context: CallbackContext) -> None:
+    user_contact = update.message.contact
+    phone_number = user_contact.phone_number
+    user_id = update.message.from_user.id
+
+    await save_phone_to_db(user_id, phone_number)
+
+    await update.message.reply_text("Спасибо, ваш номер телефона был сохранён!")
+
+
+async def close_connection() -> None:
+    if conn:
+        conn.close()
