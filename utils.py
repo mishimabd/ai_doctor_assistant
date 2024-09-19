@@ -105,3 +105,27 @@ def save_user_to_db(user_id: int, username: str) -> None:
         logger.error(f"Error saving user to the database: {e}")
     finally:
         release_connection(conn)
+
+
+def decrement_message_limit(user_id: int) -> int:
+    conn = get_connection()
+    if not conn:
+        return None
+    try:
+        with conn.cursor() as cursor:
+            cursor.execute("SELECT limit_message FROM users WHERE telegram_id = %s;", (user_id,))
+            result = cursor.fetchone()
+
+            if not result or result[0] <= 0:
+                return 0
+
+            # Decrease the message limit by 1
+            new_limit = result[0] - 1
+            cursor.execute("UPDATE users SET limit_message = %s WHERE telegram_id = %s;", (new_limit, user_id))
+            conn.commit()
+            return new_limit
+    except psycopg2.Error as e:
+        logger.error(f"Database error: {e}")
+        return None
+    finally:
+        release_connection(conn)

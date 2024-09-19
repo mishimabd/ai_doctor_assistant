@@ -9,7 +9,8 @@ import logging
 import psycopg2
 from psycopg2 import sql
 
-from utils import save_phone_to_db, get_phone_number_from_db, save_user_to_db, is_phone_number_in_whitelist
+from utils import save_phone_to_db, get_phone_number_from_db, save_user_to_db, is_phone_number_in_whitelist, \
+    decrement_message_limit
 
 logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
                     level=logging.INFO)
@@ -62,14 +63,12 @@ async def ai_assistant(update: Update, context: ContextTypes.DEFAULT_TYPE) -> No
     phone_number = get_phone_number_from_db(user_id)
 
     if phone_number is None:
-        # Prompt user to share their phone number
         await update.message.reply_text(
-            "Пожалуйста, поделитесь вашим номером телефона, чтобы продолжить использование бота.",
+            "Пожалуйста, поделитесь вашим номером телефона, нажав на кнопку ниже, чтобы продолжить использование бота."
         )
         return
 
     if not is_phone_number_in_whitelist(phone_number):
-        # Notify user to contact manager for whitelist
         await update.message.reply_text(
             "Пожалуйста, свяжитесь с менеджером, чтобы вас добавили в белый список.",
         )
@@ -89,7 +88,14 @@ async def ai_assistant(update: Update, context: ContextTypes.DEFAULT_TYPE) -> No
         "role": "user",
         "content": user_message
     })
+    remaining_limit = decrement_message_limit(user_id)
 
+    # Check if the user has reached their limit
+    if remaining_limit == 0:
+        await update.message.reply_text(
+            "Вы достигли лимита использования бота. Пожалуйста, свяжитесь с поддержкой для дальнейших действий."
+        )
+        return
     # Send a temporary loading message
     loading_message = await update.message.reply_text("🤖 Генерация ответа, пожалуйста, подождите...")
 
