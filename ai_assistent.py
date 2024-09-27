@@ -1,5 +1,5 @@
 import re
-from telegram import Update, KeyboardButton, ReplyKeyboardMarkup
+from telegram import Update, KeyboardButton, ReplyKeyboardMarkup, InputFile
 from telegram.ext import ContextTypes, CallbackContext
 from groq import Groq
 import logging
@@ -126,16 +126,13 @@ async def ai_assistant_respond(update: Update, context) -> None:
 async def start_button(update: Update, context: CallbackContext) -> None:
     context.user_data["is_text_for_adding"] = False
     user = update.message.from_user
-
-    # Save user's Telegram ID and username to the database
     save_user_to_db(user.id, user.username)
-
-    # Define the buttons for the bot's reply
     buttons = [
         [KeyboardButton("Виртуальный ассистент 🤖")],
         [KeyboardButton("Как пользоваться ботом 📖")],
         [KeyboardButton("Очистить историю 🗑️")],
         [KeyboardButton("Калькулятор ИМТ 🏋️")],
+        [KeyboardButton("Калькулятор СКФ 🦠")],
         [KeyboardButton("Поделиться номером телефона 📞", request_contact=True)],
     ]
     reply_markup = ReplyKeyboardMarkup(buttons, resize_keyboard=True)
@@ -146,70 +143,9 @@ async def start_button(update: Update, context: CallbackContext) -> None:
         reply_markup=reply_markup, parse_mode="HTML"
     )
 
-async def ask_weight(update: Update, context: CallbackContext) -> None:
-    user = update.message.from_user
-    context.user_data["is_bmi_active"] = True  # Set BMI active flag to True when button is pressed
-    USER_DATA[user.id] = {}  # Initialize user data for BMI
-    await update.message.reply_text("Пожалуйста, введите ваш вес в килограммах (например, 70):")
 
-# Function to handle BMI inputs for both weight and height (height in centimeters)
-async def handle_bmi_input(update: Update, context: CallbackContext) -> None:
-    user_id = update.message.from_user.id
-    user_input = update.message.text
 
-    if not context.user_data.get("is_bmi_active", False):
-        # If BMI is not active, let the AI assistant handle it
-        await ai_assistant(update, context)
-        return
 
-    # Proceed with BMI logic if the flag is set to True
-    if "weight" not in USER_DATA[user_id]:
-        try:
-            weight = float(user_input)
-            USER_DATA[user_id]["weight"] = weight
-            await update.message.reply_text("Теперь введите ваш рост в сантиметрах (например, 175):")
-        except ValueError:
-            await update.message.reply_text("Пожалуйста, введите корректное значение веса.")
-    else:
-        try:
-            height_cm = float(user_input)
-            USER_DATA[user_id]["height"] = height_cm
-
-            weight = USER_DATA[user_id]["weight"]
-            if height_cm <= 0:
-                await update.message.reply_text("Пожалуйста, введите положительное значение роста.")
-                return
-
-            # Convert height from centimeters to meters
-            height_m = height_cm / 100.0
-
-            # Calculate BMI
-            bmi = calculate_bmi(weight, height_m)
-            category = bmi_category(bmi)
-
-            # Reset BMI flag after calculation is complete
-            context.user_data["is_bmi_active"] = False
-
-            # Respond with the BMI result
-            await update.message.reply_text(f"Ваш ИМТ: {bmi:.2f}\nКатегория: {category}")
-        except ValueError:
-            await update.message.reply_text("Пожалуйста, введите корректное значение роста.")
-
-# BMI calculation functions
-def calculate_bmi(weight, height):
-    """ Calculate BMI from weight (kg) and height (m). """
-    return weight / (height ** 2)
-
-def bmi_category(bmi):
-    """ Determine the BMI category based on the calculated BMI. """
-    if bmi < 18.5:
-        return "Недостаточный вес"
-    elif 18.5 <= bmi < 24.9:
-        return "Нормальный вес"
-    elif 25 <= bmi < 29.9:
-        return "Избыточный вес"
-    else:
-        return "Ожирение"
 
 async def clear_history(update: Update, context: CallbackContext) -> None:
     context.user_data["conversation_history"] = []
