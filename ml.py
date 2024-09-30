@@ -18,7 +18,7 @@ async def receive_image(update: Update, context: ContextTypes.DEFAULT_TYPE) -> i
         with open(file_path, 'rb') as image_file:
             form_data = aiohttp.FormData()
             form_data.add_field('file', image_file, filename='image.jpg')  # Adjust the filename if needed
-            async with session.post('http://backend:9999/predict', data=form_data) as response:
+            async with session.post('http://91.147.92.32:9999/predict', data=form_data) as response:
                 if response.status == 200:
                     json_response = await response.json()
                     await update.message.reply_text(f"Результат анализа: {json_response}")
