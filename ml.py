@@ -39,7 +39,12 @@ async def cancel(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
 async def ecg(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
     from main import WAITING_FOR_IMAGE
     assistant_message = (
-        "Отправьте пожалуйста фото ЭКГ. 🏥"
+        "Отправьте пожалуйста фото ЭКГ (жкг). Вот пример фотки: 🏥"
     )
+    photo_path = "example.jpeg"  # Replace with the actual path to your photo
+
+    # Send the message and the example photo
     await update.message.reply_text(assistant_message)
+    await update.message.reply_photo(open(photo_path, 'rb'))
+
     return WAITING_FOR_IMAGE
