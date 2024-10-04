@@ -10,7 +10,7 @@ from utils import save_phone_to_db, get_phone_number_from_db, save_user_to_db, i
 logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
                     level=logging.INFO)
 logger = logging.getLogger(__name__)
-client = Groq(api_key="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")
+client = Groq(api_key="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")
 cyrillic_pattern = re.compile(r'[^\u0400-\u04FF\s.,!?:;\'"()🔴-]')
 
 conn = psycopg2.connect(

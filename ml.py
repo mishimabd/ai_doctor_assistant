@@ -4,29 +4,38 @@ from telegram import Update
 from telegram.ext import ContextTypes, ConversationHandler
 
 
-
 async def receive_image(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
     # Get the photo
     photo = update.message.photo[-1]  # Get the highest resolution photo
     file = await context.bot.get_file(photo.file_id)
 
-    # Download the image
-    file_path = await file.download_to_drive()  # This will download the file to a temporary path
+    # Download the image as a byte array (no need to save on disk)
+    image_data = await file.download_as_bytearray()
 
     # Send the image to the prediction endpoint
     async with aiohttp.ClientSession() as session:
-        with open(file_path, 'rb') as image_file:
-            form_data = aiohttp.FormData()
-            form_data.add_field('file', image_file, filename='image.jpg')  # Adjust the filename if needed
-            async with session.post('http://91.147.92.32:9999/predict', data=form_data) as response:
-                if response.status == 200:
-                    json_response = await response.json()
-                    await update.message.reply_text(f"Результат анализа: {json_response}")
-                else:
-                    await update.message.reply_text("Ошибка при отправке изображения для анализа.")
+        form_data = aiohttp.FormData()
+        form_data.add_field('file', image_data, filename='image.jpg')  # Adjust the filename if needed
 
-    # Clean up the downloaded file if needed
-    os.remove(file_path)
+        async with session.post('http://91.147.92.32:9999/predict', data=form_data) as response:
+            if response.status == 200:
+                json_response = await response.json()
+
+                # Extract the relevant fields
+                predicted_description = json_response.get('predicted_class_description', 'Описание недоступно')
+                confidence = json_response.get('confidence', 'Неизвестно')
+
+                # Formulate a more conversational response
+                readable_message = (
+                    f"🔍 *Ваш анализ готов!*\n\n"
+                    f"На основании предоставленного изображения:\n\n"
+                    f"- Мы обнаружили: *{predicted_description}*.\n"
+                    f"- Уверенность в этом результате составляет *{confidence}*.\n\n"
+                    f"Спасибо, что доверяете нам для анализа ваших данных! Если у вас есть вопросы, пожалуйста, обращайтесь."
+                )
+                await update.message.reply_text(readable_message, parse_mode='Markdown')
+            else:
+                await update.message.reply_text("Извините, произошла ошибка при анализе изображения. Пожалуйста, попробуйте снова.")
 
     return ConversationHandler.END  # End the conversation
 
