@@ -9,7 +9,7 @@ from ai_assistent import ai_assistant, start_button, ai_assistant_respond, clear
 from bmi_calculator import ask_weight, handle_bmi_input
 from gfr_calculator import ask_gfr, handle_gfr_input
 from instructions import instructions
-from ml import receive_image, cancel, ecg
+from ml import cancel, ecg, mri, xray, handle_image_upload
 from utils import init_pool
 
 TELEGRAM_BOT_TOKEN = "7448334585:AAFFk55-y678noEyPqc6o_eDKIwwHeGWArk"
@@ -27,15 +27,10 @@ def main():
         MessageHandler(filters.TEXT & filters.Regex("^(Как пользоваться ботом 📖)$"), instructions))
     application.add_handler(MessageHandler(filters.TEXT & filters.Regex("^(Калькулятор ИМТ 🏋️)$"), ask_weight))
     application.add_handler(MessageHandler(filters.TEXT & filters.Regex("^(Калькулятор СКФ 🦠)$"), ask_gfr))
-    conv_handler = ConversationHandler(
-        entry_points=[MessageHandler(filters.TEXT & filters.Regex("^(Анализ ЭКГ)$"), ecg)],
-        states={
-            WAITING_FOR_IMAGE: [MessageHandler(filters.PHOTO, receive_image)],
-        },
-        fallbacks=[CommandHandler('cancel', cancel)],
-    )
-
-    application.add_handler(conv_handler)
+    application.add_handler(MessageHandler(filters.TEXT & filters.Regex("^(Анализ ЭКГ)$"), ecg))
+    application.add_handler(MessageHandler(filters.TEXT & filters.Regex("^(Анализ МРТ)$"), mri))
+    application.add_handler(MessageHandler(filters.TEXT & filters.Regex("^(Анализ рентгена легких)$"), xray))
+    application.add_handler(MessageHandler(filters.PHOTO, handle_image_upload))
     application.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, handle_gfr_input))
     application.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, handle_bmi_input))
     application.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, ai_assistant))
