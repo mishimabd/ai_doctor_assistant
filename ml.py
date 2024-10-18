@@ -126,7 +126,7 @@ async def cancel(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
 
 
 async def ecg(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
-    context.user_data['analysis_type'] = 'ecg'  # Set the analysis type to ECG
+    context.user_data['analysis_type'] = 'ecg'
     await update.message.reply_text(
         "Отправьте, пожалуйста, фото ЭКГ (жкг). Вот пример фотки: 🏥"
     )

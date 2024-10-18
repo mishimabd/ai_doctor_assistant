@@ -136,6 +136,7 @@ async def start_button(update: Update, context: CallbackContext) -> None:
         [KeyboardButton("Анализ ЭКГ")],
         [KeyboardButton("Анализ МРТ")],
         [KeyboardButton("Анализ рентгена легких")],
+        [KeyboardButton("Анализ фото")],
         [KeyboardButton("Поделиться номером телефона 📞", request_contact=True)],
     ]
     reply_markup = ReplyKeyboardMarkup(buttons, resize_keyboard=True)
