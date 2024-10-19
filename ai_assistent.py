@@ -57,19 +57,6 @@ async def call_groq_api(messages: list) -> str:
 
 async def ai_assistant(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     user_id = update.message.from_user.id
-    phone_number = get_phone_number_from_db(user_id)
-
-    if phone_number is None:
-        await update.message.reply_text(
-            "Пожалуйста, поделитесь вашим номером телефона, нажав на кнопку ниже, чтобы продолжить использование бота."
-        )
-        return
-
-    if not is_phone_number_in_whitelist(phone_number):
-        await update.message.reply_text(
-            "Пожалуйста, свяжитесь с менеджером, чтобы вас добавили в белый список.",
-        )
-        return
 
     user_message = update.message.text
     logger.info(f"Received message: {user_message}")
