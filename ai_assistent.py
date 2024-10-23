@@ -14,9 +14,9 @@ client = Groq(api_key="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"
 cyrillic_pattern = re.compile(r'[^\u0400-\u04FF\s.,!?:;\'"()🔴-]')
 
 conn = psycopg2.connect(
-    dbname="virtual_assistant_database",
-    user="postgres",
-    password="Lg26y0M@x",
+    dbname="postgres",
+    user="mishima",
+    password="Htd-$?Pk3)e;E~QUF`XpZu",
     host="91.147.92.32",
 )
 
