@@ -17,7 +17,7 @@ conn = psycopg2.connect(
     dbname="postgres",
     user="mishima",
     password="Htd-$?Pk3)e;E~QUF`XpZu",
-    host="91.147.92.32",
+    host="194.32.142.41",
 )
 
 USER_DATA = {}
