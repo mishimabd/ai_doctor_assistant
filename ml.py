@@ -27,9 +27,9 @@ async def handle_image_upload(update: Update, context: ContextTypes.DEFAULT_TYPE
 
     # Define the prediction endpoint based on analysis type
     endpoint = {
-        'ecg': 'http://91.147.92.32:9999/predict/ecg',
-        'mri': 'http://91.147.92.32:9999/predict/mri',
-        'xray': 'http://91.147.92.32:9999/predict/xray',
+        'ecg': 'http://194.32.142.41:9999/predict/ecg',
+        'mri': 'http://194.32.142.41:9999/predict/mri',
+        'xray': 'http://194.32.142.41:9999/predict/xray',
     }.get(analysis_type)
 
     # Send the image to the prediction endpoint
