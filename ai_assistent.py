@@ -12,8 +12,7 @@ logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s
 logger = logging.getLogger(__name__)
 
 # Set your OpenAI API key
-client = OpenAI(api_key="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")
-
+client = OpenAI(api_key="")
 
 async def call_gpt_api(messages: list) -> str:
     system_message = {
