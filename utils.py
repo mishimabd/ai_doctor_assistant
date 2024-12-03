@@ -15,10 +15,10 @@ def init_pool():
         db_pool = psycopg2.pool.SimpleConnectionPool(
             1,  # minconn
             10,  # maxconn
-            dbname="virtual_assistant_database",
-            user="postgres",
-            password="Lg26y0M@x",
-            host="91.147.92.32"
+            dbname="postgres",
+            user="mishima",
+            password="Htd-$?Pk3)e;E~QUF`XpZu",
+            host="194.32.142.41",
         )
         if db_pool:
             logger.info("Database connection pool created successfully.")
