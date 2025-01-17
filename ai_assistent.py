@@ -73,8 +73,8 @@ async def ai_assistant(update: Update, context: ContextTypes.DEFAULT_TYPE) -> No
         "content": user_message
     })
 
-    loading_message = await update.message.reply_text("🤖 Генерация ответа, пожалуйста, подождите...")
-
+    loading_message = await update.message.reply_text("Отправьте вашу картинку!")
+    return
     ai_response = await call_gpt_api(context.user_data["conversation_history"])
     logger.info(f"AI response: {ai_response}")
 
@@ -104,21 +104,21 @@ async def start_button(update: Update, context: CallbackContext) -> None:
     user = update.message.from_user
     save_user_to_db(user.id, user.username)
     buttons = [
-        [KeyboardButton("Виртуальный ассистент 🤖")],
-        [KeyboardButton("Как пользоваться ботом 📖")],
-        [KeyboardButton("Очистить историю 🗑️")],
-        [KeyboardButton("Калькулятор ИМТ 🏋️")],
-        [KeyboardButton("Калькулятор СКФ 🦠")],
-        [KeyboardButton("Анализ ЭКГ")],
-        [KeyboardButton("Анализ МРТ")],
+        # [KeyboardButton("Виртуальный ассистент 🤖")],
+        # [KeyboardButton("Как пользоваться ботом 📖")],
+        # [KeyboardButton("Очистить историю 🗑️")],
+        # [KeyboardButton("Калькулятор ИМТ 🏋️")],
+        # [KeyboardButton("Калькулятор СКФ 🦠")],
+        # [KeyboardButton("Анализ ЭКГ")],
+        # [KeyboardButton("Анализ МРТ")],
         [KeyboardButton("Анализ рентгена легких")],
-        [KeyboardButton("Анализ фото")],
-        [KeyboardButton("Поделиться номером телефона 📞", request_contact=True)],
+        # [KeyboardButton("Анализ фото")],
+        # [KeyboardButton("Поделиться номером телефона 📞", request_contact=True)],
     ]
     reply_markup = ReplyKeyboardMarkup(buttons, resize_keyboard=True)
 
     await update.message.reply_text(
-        f"👋Добрый день, {user.first_name}! Я ваш виртуальный ассистент! Задавайте ваши интересующие вопросы",
+        f"👋Добрый день, {user.first_name}!",
         reply_markup=reply_markup, parse_mode="HTML"
     )
 
