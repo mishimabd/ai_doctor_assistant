@@ -104,16 +104,16 @@ async def start_button(update: Update, context: CallbackContext) -> None:
     user = update.message.from_user
     save_user_to_db(user.id, user.username)
     buttons = [
-        # [KeyboardButton("Виртуальный ассистент 🤖")],
-        # [KeyboardButton("Как пользоваться ботом 📖")],
-        # [KeyboardButton("Очистить историю 🗑️")],
-        # [KeyboardButton("Калькулятор ИМТ 🏋️")],
-        # [KeyboardButton("Калькулятор СКФ 🦠")],
-        # [KeyboardButton("Анализ ЭКГ")],
-        # [KeyboardButton("Анализ МРТ")],
+        [KeyboardButton("Виртуальный ассистент 🤖")],
+        [KeyboardButton("Как пользоваться ботом 📖")],
+        [KeyboardButton("Очистить историю 🗑️")],
+        [KeyboardButton("Калькулятор ИМТ 🏋️")],
+        [KeyboardButton("Калькулятор СКФ 🦠")],
+        [KeyboardButton("Анализ ЭКГ")],
+        [KeyboardButton("Анализ МРТ")],
         [KeyboardButton("Анализ рентгена легких")],
-        # [KeyboardButton("Анализ фото")],
-        # [KeyboardButton("Поделиться номером телефона 📞", request_contact=True)],
+        [KeyboardButton("Анализ фото")],
+        [KeyboardButton("Поделиться номером телефона 📞", request_contact=True)],
     ]
     reply_markup = ReplyKeyboardMarkup(buttons, resize_keyboard=True)
 

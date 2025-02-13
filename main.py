@@ -21,21 +21,21 @@ def main():
     application = Application.builder().token(TELEGRAM_BOT_TOKEN).build()
     application.add_handler(CommandHandler("start", start_button))
     application.add_handler(CommandHandler("clear", clear_history))
-    # application.add_handler(
-    #     MessageHandler(filters.TEXT & filters.Regex("^(Виртуальный ассистент 🤖)$"), ai_assistant_respond))
-    # application.add_handler(
-    #     MessageHandler(filters.TEXT & filters.Regex("^(Как пользоваться ботом 📖)$"), instructions))
-    # application.add_handler(MessageHandler(filters.TEXT & filters.Regex("^(Калькулятор ИМТ 🏋️)$"), ask_weight))
-    # application.add_handler(MessageHandler(filters.TEXT & filters.Regex("^(Калькулятор СКФ 🦠)$"), ask_gfr))
-    # application.add_handler(MessageHandler(filters.TEXT & filters.Regex("^(Анализ ЭКГ)$"), ecg))
-    # application.add_handler(MessageHandler(filters.TEXT & filters.Regex("^(Анализ МРТ)$"), mri))
+    application.add_handler(
+        MessageHandler(filters.TEXT & filters.Regex("^(Виртуальный ассистент 🤖)$"), ai_assistant_respond))
+    application.add_handler(
+        MessageHandler(filters.TEXT & filters.Regex("^(Как пользоваться ботом 📖)$"), instructions))
+    application.add_handler(MessageHandler(filters.TEXT & filters.Regex("^(Калькулятор ИМТ 🏋️)$"), ask_weight))
+    application.add_handler(MessageHandler(filters.TEXT & filters.Regex("^(Калькулятор СКФ 🦠)$"), ask_gfr))
+    application.add_handler(MessageHandler(filters.TEXT & filters.Regex("^(Анализ ЭКГ)$"), ecg))
+    application.add_handler(MessageHandler(filters.TEXT & filters.Regex("^(Анализ МРТ)$"), mri))
     application.add_handler(MessageHandler(filters.TEXT & filters.Regex("^(Анализ рентгена легких)$"), xray))
-    # application.add_handler(MessageHandler(filters.TEXT & filters.Regex("^(Анализ фото)$"), development))
+    application.add_handler(MessageHandler(filters.TEXT & filters.Regex("^(Анализ фото)$"), development))
     application.add_handler(MessageHandler(filters.PHOTO, handle_image_upload))
-    # application.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, handle_gfr_input))
-    # application.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, handle_bmi_input))
-    # application.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, ai_assistant))
-    # application.add_handler(MessageHandler(filters.CONTACT, contact_handler))
+    application.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, handle_gfr_input))
+    application.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, handle_bmi_input))
+    application.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, ai_assistant))
+    application.add_handler(MessageHandler(filters.CONTACT, contact_handler))
     application.run_polling(allowed_updates=Update.ALL_TYPES)
 
 
