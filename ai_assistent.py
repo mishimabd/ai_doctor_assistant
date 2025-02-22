@@ -73,8 +73,8 @@ async def ai_assistant(update: Update, context: ContextTypes.DEFAULT_TYPE) -> No
         "content": user_message
     })
 
-    loading_message = await update.message.reply_text("Отправьте вашу картинку!")
-    return
+    loading_message = await update.message.reply_text("Подождите пожалуйста!")
+
     ai_response = await call_gpt_api(context.user_data["conversation_history"])
     logger.info(f"AI response: {ai_response}")
 
