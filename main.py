@@ -31,7 +31,7 @@ def main():
     application.add_handler(MessageHandler(filters.TEXT & filters.Regex("^(Анализ МРТ)$"), mri))
     application.add_handler(MessageHandler(filters.TEXT & filters.Regex("^(Анализ рентгена легких)$"), xray))
     application.add_handler(MessageHandler(filters.TEXT & filters.Regex("^(Анализ фото)$"), development))
-    # application.add_handler(MessageHandler(filters.PHOTO, handle_image_upload))
+    application.add_handler(MessageHandler(filters.PHOTO, handle_image_upload))
     application.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, handle_gfr_input))
     application.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, handle_bmi_input))
     application.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, ai_assistant))
